@@ -66,23 +66,28 @@ public class SectionServiceImpl implements SectionService {
 
 
     @Override
-    public Section updateSectionDetails(Integer id, SectionDetailsInput sectionDetailsInput) {
-        Section section = sectionRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Section with id " + id + " not found")
+    public Section updateSectionDetails(SectionDetailsInput sectionDetailsInput) {
+        boolean performUpdate = false;
+        Section section = sectionRepository.findById(sectionDetailsInput.getSectionId()).orElseThrow(
+                () -> new NotFoundException("Section with id " + sectionDetailsInput.getSectionId() + " not found")
         );
 
         if (sectionDetailsInput.getName() != null) {
-            sectionRepository.findByName(sectionDetailsInput.getName()).ifPresent(
-                    returnedSection -> {
-                        throw new DataIntegrityViolationException("Section with name " + sectionDetailsInput.getName() + " already exists");
-                    }
-            );
+            if (sectionDetailsInput.getName().strip().length() == 0) {
+                throw new BadRequestException("Section name cannot be empty");
+            }
+            if (sectionRepository.existsByName(sectionDetailsInput.getName())){
+                throw new DataIntegrityViolationException("Section with name " + sectionDetailsInput.getName() + " already exists" );
+            }
+
             section.setName(sectionDetailsInput.getName());
+            performUpdate = true;
         }
         if (sectionDetailsInput.getDescription() != null) {
             section.setDescription(sectionDetailsInput.getDescription());
+            performUpdate = true;
         }
-        return sectionRepository.save(section);
+        return performUpdate ? sectionRepository.save(section) : section;
     }
 
     //accepting only the list of the sections to swap

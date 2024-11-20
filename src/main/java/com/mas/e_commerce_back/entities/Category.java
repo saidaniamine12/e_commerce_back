@@ -30,9 +30,12 @@ public class Category {
     @Column(nullable = false)
     private Integer position;
 
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<ProductType> productTypeList;
+
     // unidirectional
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", referencedColumnName = "section_id", foreignKey = @ForeignKey(name = "fk_category_section"))
     private Section section;
 

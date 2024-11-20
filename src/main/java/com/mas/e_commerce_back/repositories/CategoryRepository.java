@@ -32,6 +32,9 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     @Query(nativeQuery = true, value = "SELECT EXISTS (SELECT 1 FROM categories WHERE category_id = :id);")
     boolean existsById(@Param("id") Integer id);
 
+    @Query(nativeQuery = true, value = "SELECT EXISTS (SELECT 1 FROM product_types WHERE category_id = :categoryId);")
+    boolean productTypeListExists(@Param("categoryId") Integer categoryId);
+
     @Query(nativeQuery = true, value = "SELECT * FROM categories WHERE category_id IN (:ids) ORDER BY position ASC;")
     List<Category> findByIdsOrderByPosition(Set<Integer> ids);
 

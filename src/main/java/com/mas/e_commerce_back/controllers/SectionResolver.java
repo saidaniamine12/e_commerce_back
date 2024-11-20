@@ -80,12 +80,11 @@ public class SectionResolver {
 
     @GraphQLMutation(description = "update section details")
     public ApiResponse<Section> updateSectionDetails(
-            @GraphQLNonNull @GraphQLArgument Integer id,
-            @Valid @GraphQLNonNull @GraphQLArgument SectionDetailsInput sectionDetailsInput){
+             @GraphQLNonNull @GraphQLArgument SectionDetailsInput sectionDetailsInput){
         return new ApiResponse<>(
                 true,
             "Section updated successfully",
-            sectionService.updateSectionDetails(id, sectionDetailsInput)
+            sectionService.updateSectionDetails(sectionDetailsInput)
         );
 
     }

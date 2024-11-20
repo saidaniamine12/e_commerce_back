@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @GraphQLType
 public class SectionDetailsInput {
 
+    private Integer sectionId;
+
     @NotBlank( message = "Invalid Name: Empty value provided")
     private String name;
 

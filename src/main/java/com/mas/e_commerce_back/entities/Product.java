@@ -51,7 +51,7 @@ public class Product {
     @Column(unique = true)
     private String gtin;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductImage> imageList;
 
     @Column(columnDefinition = "TEXT")
@@ -74,7 +74,7 @@ public class Product {
 
     private Number stockQuantity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manufacturer_id",nullable = false,  foreignKey = @ForeignKey(name = "fk_product_manufacturer"))
     private Manufacturer manufacturer;
 

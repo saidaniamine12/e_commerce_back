@@ -2,12 +2,13 @@ package com.mas.e_commerce_back.services;
 
 import com.mas.e_commerce_back.entities.ProductType;
 import com.mas.e_commerce_back.inputs.ProductTypeInput;
+import com.mas.e_commerce_back.inputs.ProductTypePositionInput;
 
 import java.util.List;
 
 public interface ProductTypeService {
 
-     List<ProductType> getProductTypesByCategoryId(Integer categoryId);
+     List<ProductType> getAllProductTypesByCategoryId(Integer categoryId);
 
      ProductType getProductTypeById(Integer id);
 
@@ -15,15 +16,14 @@ public interface ProductTypeService {
 
      ProductType createProductType(ProductTypeInput productTypeInput);
 
-     ProductType updateProductTypeDetails(Integer id, ProductTypeInput productTypeInput);
+     ProductType updateProductTypeDetails(ProductTypeInput productTypeInput);
 
      // swap positions of product types
-     List<ProductType> swapProductTypesPositions(List<ProductTypeInput> productTypeInput);
+     List<ProductType> swapProductTypesPositions(List<ProductTypePositionInput> categoryPositionInputList);
 
      // set the default positions of a product types list by their alphabetical order
      List<ProductType> sortProductTypesByAlphabeticalOrder(Integer categoryId);
 
-     List<ProductType> getProductTypesByCategoryIdAndName(Integer categoryId, String name);
 
      Boolean deleteProductType(Integer id);
 

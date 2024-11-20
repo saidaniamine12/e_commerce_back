@@ -1,15 +1,12 @@
 package com.mas.e_commerce_back.services;
 
 import com.mas.e_commerce_back.entities.Category;
-import com.mas.e_commerce_back.entities.ProductType;
 import com.mas.e_commerce_back.entities.Section;
 import com.mas.e_commerce_back.exceptions.BadRequestException;
 import com.mas.e_commerce_back.exceptions.NotFoundException;
 import com.mas.e_commerce_back.inputs.CategoryDetailsInput;
 import com.mas.e_commerce_back.inputs.CategoryPositionInput;
-import com.mas.e_commerce_back.inputs.SectionPositionInput;
 import com.mas.e_commerce_back.repositories.CategoryRepository;
-import com.mas.e_commerce_back.repositories.ProductTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -76,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> swapCategoriesPositions(List<CategoryPositionInput> categoryPositionInputList) {
-        Set<Integer> positions = categoryPositionInputList.stream().map(input -> input.getPosition()).collect(Collectors.toSet());
+        Set<Integer> positions = categoryPositionInputList.stream().map(input -> input.getNewPosition()).collect(Collectors.toSet());
         Set<Integer> ids = categoryPositionInputList.stream().map(input -> input.getCategoryId()).collect(Collectors.toSet());
 
         if (ids.size() != categoryPositionInputList.size()){
@@ -87,11 +84,16 @@ public class CategoryServiceImpl implements CategoryService {
         }
         List<Category> categoryList = categoryRepository.findByIdsOrderByPosition(ids);
         Integer sectionId = categoryList.get(0).getSection().getSectionId();
+        if (sectionId == null){
+            throw new NotFoundException("The section with id " + sectionId + " does not exist in the database");
+        }
         // check if the category list is within the same section id
         categoryList.forEach(
                 category -> {
                     if (category.getSection().getSectionId() != sectionId){
-                        throw new BadRequestException("The category with id " + category.getCategoryId() + " is not in the same section as the other categories");
+                        throw new BadRequestException("The category with id " + category.getCategoryId()
+                                + " is not in the same section as the other categories,"
+                                + " all categories must be in the same section");
                     }
                 }
         );
@@ -111,11 +113,11 @@ public class CategoryServiceImpl implements CategoryService {
 
         // swap the positions
         for (CategoryPositionInput categoryPositionInput : categoryPositionInputList) {
-            if (!sectionsIds.contains(categoryPositionInput.getPositionId())){
+            if (!sectionsIds.contains(categoryPositionInput.getSectionId())){
                 throw new NotFoundException("The category with id " + categoryPositionInput.getCategoryId() + " does not exist in the database");
             }
-            Category category = categoryList.stream().filter( section1 -> section1.getCategoryId() == categoryPositionInput.getCategoryId()).findFirst().get();
-            category.setPosition(categoryPositionInput.getPosition());
+            Category category = categoryList.stream().filter( category1 -> category1.getCategoryId() == categoryPositionInput.getCategoryId()).findFirst().get();
+            category.setPosition(categoryPositionInput.getNewPosition());
         }
 
         categoryRepository.saveAll(categoryList);
@@ -144,20 +146,27 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public Category updateCategoryDetails(Integer id, CategoryDetailsInput categoryDetailsInput) {
-        Category category = categoryRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("no category found with id:" + id)
+    public Category updateCategoryDetails(CategoryDetailsInput categoryDetailsInput) {
+
+        boolean performUpdate = false;
+        Category category = categoryRepository.findById(categoryDetailsInput.getCategoryId()).orElseThrow(
+                () -> new NotFoundException("no category found with id:" + categoryDetailsInput.getCategoryId())
         );
         if (categoryDetailsInput.getName() != null) {
+            if (categoryDetailsInput.getName().strip().length() == 0) {
+                throw new BadRequestException("category name cannot be empty");
+            }
             if (categoryRepository.existsByName(categoryDetailsInput.getName())){
                 throw new DataIntegrityViolationException("Category with name" + categoryDetailsInput.getName() + " already exists");
             }
             category.setName(categoryDetailsInput.getName());
+            performUpdate = true;
         }
         if (categoryDetailsInput.getDescription() != null) {
             category.setDescription(categoryDetailsInput.getDescription());
+            performUpdate = true;
         }
-        return categoryRepository.save(category);
+        return performUpdate ? categoryRepository.save(category) : category;
     }
 
     @Override
@@ -166,10 +175,8 @@ public class CategoryServiceImpl implements CategoryService {
                 () -> new NotFoundException("no category found with id:" + id)
         );
 
-        List<ProductType> productTypeList = null;
-
         // check if the category has product types
-        if (productTypeList.size() > 0) {
+        if (categoryRepository.productTypeListExists(id)) {
             throw new BadRequestException("category with id:" + id + " has product types, you have to delete them first");
         }
 
@@ -190,6 +197,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findByName(name).orElseThrow(
                 () -> new NotFoundException("no category found with name:" + name)
         );
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        if (id == null) throw new BadRequestException("invalid id provided for category:" + null);
+        return categoryRepository.existsById(id);
     }
 
 }

@@ -78,12 +78,11 @@ public class CategoryResolver {
     // update category details
     @GraphQLMutation(description = "update category details")
     public ApiResponse<Category> updateCategoryDetails(
-            @GraphQLNonNull @GraphQLArgument Integer id,
-            @Valid @GraphQLNonNull @GraphQLArgument CategoryDetailsInput categoryDetailsInput){
+            @GraphQLNonNull @GraphQLArgument CategoryDetailsInput categoryDetailsInput){
         return new ApiResponse<>(
                 true,
             "category updated successfully",
-            categoryService.updateCategoryDetails(id, categoryDetailsInput)
+            categoryService.updateCategoryDetails(categoryDetailsInput)
         );
 
     }

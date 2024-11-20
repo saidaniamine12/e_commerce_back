@@ -33,4 +33,8 @@ public interface SectionRepository extends JpaRepository<Section, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT EXISTS (SELECT 1 FROM sections WHERE section_id = :id);")
     boolean existsById(@Param("id") Integer id);
+
+    @Query(nativeQuery = true, value = "SELECT EXISTS (SELECT 1 FROM categories WHERE section_id = :sectionId);")
+    boolean categoryListExists(@Param("sectionId") Integer sectionId);
+
 }

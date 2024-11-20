@@ -12,6 +12,8 @@ import lombok.NonNull;
 @GraphQLType
 public class ProductTypeInput {
 
+    private Integer productTypeId;
+
     @NotBlank( message = "Invalid Name: Empty or Null value provided")
     private String name;
 

@@ -27,11 +27,13 @@ public interface CategoryService {
     List<Category> sortCategoriesByAlphabeticalOrder(Integer SectionId);
 
     // update category
-     Category updateCategoryDetails(Integer id, CategoryDetailsInput categoryDetailsInput);
+     Category updateCategoryDetails(CategoryDetailsInput categoryDetailsInput);
 
     // delete category
      Boolean deleteCategory(Integer id);
 
     // get category by name
      Category getCategoryByName(String name);
+
+     boolean existsById(Integer id);
 }

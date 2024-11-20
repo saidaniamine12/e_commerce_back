@@ -18,7 +18,7 @@ public interface SectionService {
      Section getSectionById(Integer id);
 
      // update section
-     Section updateSectionDetails(Integer id, SectionDetailsInput sectionDetailsInput);
+     Section updateSectionDetails(SectionDetailsInput sectionDetailsInput);
 
      // update sections position
      List<Section> swapSectionsPositions(List<SectionPositionInput> sectionPositionInputList);
