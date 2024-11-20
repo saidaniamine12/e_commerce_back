@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -135,13 +136,16 @@ public class SectionServiceImpl implements SectionService {
 
     @Override
     public List<Section> sortSectionsByAlphabeticalOrder() {
+        List<Section> updatedList = new ArrayList<>();
         List<Section> sections = sectionRepository.findAllByOrderByName();
         for (int i = 0; i < sections.size(); i++) {
             if (sections.get(i).getPosition() != i) {
                 sections.get(i).setPosition(i);
+                updatedList.add(sections.get(i));
             }
         }
-        return sectionRepository.saveAll(sections);
+        sectionRepository.saveAll(updatedList);
+        return sectionRepository.findAllOrderByPosition();
     }
 
 

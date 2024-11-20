@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -129,18 +130,23 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> sortCategoriesByAlphabeticalOrder(Integer sectionId) {
         // check if the section exists
+        List<Category> updatedList = new ArrayList<>();
         if (!sectionService.existsById(sectionId)) {
             throw new NotFoundException("no section found with id:" + sectionId);
         }
-        List<Category> category = categoryRepository.findAllBySectionIdOrderByName(sectionId);
-
-        for (int i = 0; i < category.size(); i++) {
-            if (category.get(i).getPosition() != i) {
-                category.get(i).setPosition(i);
+        List<Category> categoryList = categoryRepository.findAllBySectionIdOrderByName(sectionId);
+        if (categoryList.size() == 0) {
+            return null;
+        }
+        for (int i = 0; i < categoryList.size(); i++) {
+            if (categoryList.get(i).getPosition() != i) {
+                categoryList.get(i).setPosition(i);
+                updatedList.add(categoryList.get(i));
             }
 
         }
-        categoryRepository.saveAll(category);
+
+        categoryRepository.saveAll(updatedList);
         return categoryRepository.findAllBySectionIdOrderByPosition(sectionId);
     }
 

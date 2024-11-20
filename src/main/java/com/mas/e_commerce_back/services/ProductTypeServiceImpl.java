@@ -10,6 +10,7 @@ import com.mas.e_commerce_back.repositories.ProductTypeRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -151,7 +152,26 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 
     @Override
     public List<ProductType> sortProductTypesByAlphabeticalOrder(Integer categoryId) {
-        return null;
+        // check if the category exists
+        List<ProductType> updatedProductTypes = new ArrayList<>();
+        if (!categoryService.existsById(categoryId)) {
+            throw new NotFoundException("no category found with id:" + categoryId);
+        }
+        List<ProductType> productTypeList = productTypeRepository.findAllByCategoryIdOrderByPosition(categoryId);
+        if (productTypeList.size() == 0) {
+            return null;
+        }
+
+        for (int i = 0; i < productTypeList.size(); i++) {
+            if (productTypeList.get(i).getPosition() != i) {
+                productTypeList.get(i).setPosition(i);
+                updatedProductTypes.add(productTypeList.get(i));
+            }
+
+        }
+
+        productTypeRepository.saveAll(updatedProductTypes);
+        return productTypeRepository.findAllByCategoryIdOrderByPosition(categoryId);
     }
 
 

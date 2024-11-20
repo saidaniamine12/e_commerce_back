@@ -18,7 +18,7 @@ public interface ProductTypeRepository extends JpaRepository<ProductType, Intege
     List<ProductType> getAllByCategoryId(@Param("id") Integer id);
 
     @Query(nativeQuery = true, value = "SELECT * FROM product_types where category_id = :categoryId ORDER BY name ASC ;")
-    List<Category> findAllByCategoryIdOrderByName(@Param("categoryId") Integer categoryId);
+    List<ProductType> findAllByCategoryIdOrderByName(@Param("categoryId") Integer categoryId);
 
     @Query(nativeQuery = true, value = "SELECT * FROM product_types WHERE product_type_id = :id")
     Optional<ProductType> findById(@Param("id") String id);
