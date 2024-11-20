@@ -17,8 +17,9 @@ public interface ManufacturerService {
 
     boolean manufacturerExists(Integer id);
 
-    Manufacturer updateManufacturerById(Integer id, ManufacturerInput manufacturerInput);
 
-    Manufacturer deleteManufacturerById(Integer id);
+    Manufacturer updateManufacturerDetails(ManufacturerInput manufacturerInput);
+
+    Boolean deleteManufacturerById(Integer id);
 
 }

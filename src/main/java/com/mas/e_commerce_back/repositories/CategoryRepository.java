@@ -1,7 +1,6 @@
 package com.mas.e_commerce_back.repositories;
 
 import com.mas.e_commerce_back.entities.Category;
-import com.mas.e_commerce_back.entities.Section;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +20,7 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> findAllBySectionIdOrderByName(@Param("sectionId") Integer sectionId);
 
     @Query(nativeQuery = true, value = "SELECT * FROM categories WHERE name = :name")
-    Optional<Category> findByName(String name);
+    Optional<Category> findByName(@Param("name") String name);
 
     @Query(nativeQuery = true, value = "SELECT * FROM categories WHERE position = (SELECT MAX(position) FROM categories WHERE section_id = :sectionId) AND section_id = :sectionId")
     Optional<Category> findCategoryByLastPositionAndCategoryId(@Param("sectionId") Integer sectionId);

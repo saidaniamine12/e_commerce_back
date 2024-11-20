@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 @GraphQLType
 public class ManufacturerInput {
 
+    private Integer manufacturerId;
+
     @NotBlank( message = "Invalid Name: Empty or Null value provided")
     private String name;
 
