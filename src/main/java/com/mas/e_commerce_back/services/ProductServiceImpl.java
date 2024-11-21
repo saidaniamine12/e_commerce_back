@@ -2,13 +2,23 @@ package com.mas.e_commerce_back.services;
 
 
 import com.mas.e_commerce_back.entities.Product;
+import com.mas.e_commerce_back.exceptions.NotFoundException;
 import com.mas.e_commerce_back.inputs.ProductInput;
+import com.mas.e_commerce_back.repositories.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService{
+
+    private final ProductRepository productRepository;
+
+    @Autowired
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
     @Override
     public List<Product> getAllProducts() {
         return null;
@@ -21,7 +31,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product getProductById(Integer id) {
-        return null;
+        return productRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("no product found with id:" + id))
+        ;
     }
 
     @Override

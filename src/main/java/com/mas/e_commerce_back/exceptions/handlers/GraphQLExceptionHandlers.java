@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.ZonedDateTime;
@@ -112,7 +111,7 @@ public class GraphQLExceptionHandlers {
                 .build();
     }
 
-    // for NotEmpty but it may ever be actviated because
+    // for NotEmpty but it may ever be activated because
     // ConstraintViolationException is called for every validation
     // even in the method argument validation
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -257,6 +256,20 @@ public class GraphQLExceptionHandlers {
                         .path(handlerParameters.getPath())
                         .locations(List.of(handlerParameters.getSourceLocation()))
                         .extensions(DataIntegrityHashMap)
+                        .build())
+                .build();
+    }
+
+    // illegal argument exception
+    @ExceptionHandler(IllegalArgumentException.class)
+    public DataFetcherExceptionHandlerResult handleIllegalArgumentException(DataFetcherExceptionHandlerParameters handlerParameters) {
+        BadRequestHashMap.put("timestamp", ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+        return DataFetcherExceptionHandlerResult.newResult()
+                .error(GraphqlErrorBuilder.newError()
+                        .message(handlerParameters.getException().getMessage())
+                        .path(handlerParameters.getPath())
+                        .locations(List.of(handlerParameters.getSourceLocation()))
+                        .extensions(BadRequestHashMap)
                         .build())
                 .build();
     }

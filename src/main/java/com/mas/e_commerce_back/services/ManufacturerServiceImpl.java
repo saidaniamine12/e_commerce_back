@@ -23,7 +23,6 @@ public class ManufacturerServiceImpl implements ManufacturerService {
     }
 
 
-
     @Override
     public Manufacturer createManufacturer(ManufacturerInput manufacturerInput) {
         // check if the manufacturer exists by name
@@ -33,6 +32,7 @@ public class ManufacturerServiceImpl implements ManufacturerService {
                 }
         );
         Manufacturer manufacturer = new Manufacturer();
+        //TODO add image url
         manufacturer.setName(manufacturerInput.getName());
         // handle saving the image to the object database
         return manufacturerRepository.save(manufacturer);

@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @Data
 @Table(name = "product_images")
@@ -29,7 +31,7 @@ public class ProductImage {
 
     @Min(value = 0,message = "Image order index must be at least 0")
     @Max(value = 9, message = "Image order index cannot exceed 9")
-    private Integer ImageOrderIndex;
+    private Integer position;
 
     @ManyToOne
     @JoinColumn(name = "product_id",  foreignKey = @ForeignKey(name = "fk_product_image_product"))

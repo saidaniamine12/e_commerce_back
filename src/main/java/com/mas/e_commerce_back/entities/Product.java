@@ -35,6 +35,7 @@ public class Product {
     @Column(unique = true, nullable = false)
     private String name;
 
+    private String thumbnail;
 
     @NotNull
     @NotEmpty
@@ -51,7 +52,7 @@ public class Product {
     @Column(unique = true)
     private String gtin;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> imageList;
 
     @Column(columnDefinition = "TEXT")
