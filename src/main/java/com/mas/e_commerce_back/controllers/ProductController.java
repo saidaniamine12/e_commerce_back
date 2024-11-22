@@ -2,7 +2,7 @@
 //
 //import com.mas.e_commerce_back.dtos.ApiResponse;
 //import com.mas.e_commerce_back.entities.Product;
-//import com.mas.e_commerce_back.inputs.ProductInput;
+//import com.mas.e_commerce_back.inputs.product.ProductInput;
 //import com.mas.e_commerce_back.services.ProductService;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.ResponseEntity;

@@ -7,15 +7,21 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
 @Entity
+@Builder
 @Data
 @Table(name = "products")
 @NoArgsConstructor
@@ -67,11 +73,16 @@ public class Product {
     private BigDecimal discountAmount;
 
     @Column(precision = 10, scale = 3)
-    private BigDecimal discountedPrice;
+    private BigDecimal discountPrice;
 
-    private Date discountStartDate;
+    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    private ZonedDateTime discountStartDate;
 
-    private Date discountEndDate;
+    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    private ZonedDateTime discountEndDate;
+
+    @Column(name = "is_discounted",nullable = false)
+    private boolean isDiscounted = false ;
 
     private Number stockQuantity;
 
@@ -85,9 +96,31 @@ public class Product {
 
     private String warranty;
 
-    private Date addedAt;
+    @CreationTimestamp
+    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    private ZonedDateTime addedAt;
 
-    private Date updatedAt;
+    @Column(columnDefinition= "TIMESTAMP WITH TIME ZONE")
+    @UpdateTimestamp
+    private ZonedDateTime updatedAt;
+
+    @Column(name = "is_visible",nullable = false)
+    private boolean isVisible = false ;
+
+    public static String generateSlug(String productName) {
+        String[] nameArr = productName.toLowerCase().split(" ");
+        StringBuilder slugBuilder = new StringBuilder();
+        for (String s : nameArr) {
+            // Remove special characters from `s`
+            s = s.replaceAll("[^a-z0-9-]", "");
+
+            if (s.equals("-") || s.isEmpty()) continue; // Skip unwanted cases
+            slugBuilder.append(s).append("-");
+        }
+        slugBuilder = slugBuilder.deleteCharAt(slugBuilder.length() - 1);
+        return slugBuilder.toString();
+
+    }
 
 
 }

@@ -1,9 +1,9 @@
-package com.mas.e_commerce_back.inputs;
+package com.mas.e_commerce_back.inputs.product;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.leangen.graphql.annotations.types.GraphQLType;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,14 @@ and the discount part is going to be optional,
 @Data
 @NoArgsConstructor
 @GraphQLType
-public class ProductInput {
+public class ProductCreateInput {
+
+
+    @NotNull( message = "Invalid ManufacturerId: Null value provided")
+    private Integer ManufacturerId;
+
+    @NotNull( message = "Invalid productTypeId: Null value provided")
+    private Integer productTypeId;
 
     @NotBlank( message = "Invalid Name: Empty or Null value provided")
     private String name;
@@ -28,23 +35,14 @@ public class ProductInput {
     @Positive
     private BigDecimal price;
 
-    private Boolean isDiscounted;
-
-    private ProductDiscountInput discount;
-
     private String warranty;
-
-    private Integer productTypeId;
 
     private String gtin;
 
     private String sku;
 
-    @Min(0)
-    private Integer amountToAdd;
-
+    private Integer stock;
 
     private JsonNode techSpecValues;
-
 
 }

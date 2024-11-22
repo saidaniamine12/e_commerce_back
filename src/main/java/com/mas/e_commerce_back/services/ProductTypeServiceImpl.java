@@ -36,7 +36,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     @Override
     public ProductType getProductTypeById(Integer id) {
         return productTypeRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Section with id" + id + " not found")
+                () -> new NotFoundException("product type with id" + id + " not found")
         );
 
     }

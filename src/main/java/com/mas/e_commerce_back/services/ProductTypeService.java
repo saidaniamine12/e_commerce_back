@@ -24,7 +24,6 @@ public interface ProductTypeService {
      // set the default positions of a product types list by their alphabetical order
      List<ProductType> sortProductTypesByAlphabeticalOrder(Integer categoryId);
 
-
      Boolean deleteProductType(Integer id);
 
 

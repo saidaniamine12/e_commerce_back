@@ -1,0 +1,9 @@
+scalar Upload
+
+type Mutation {
+    uploadFile(file: Upload!): String
+}
+
+type Query {
+    getFile: String
+}

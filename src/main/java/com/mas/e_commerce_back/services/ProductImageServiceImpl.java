@@ -31,7 +31,7 @@ public class ProductImageServiceImpl implements ProductImageService{
     }
 
     @Override
-    public List<ProductImage> saveProductImageList(List<ProductImageInput> productImageInputList) {
+    public List<ProductImage> addProductImageList(List<ProductImageInput> productImageInputList) {
         Integer productId = productImageInputList.get(0).getProductId();
         productImageInputList.forEach(productImageInput -> {
             if (productImageInput.getProductId() != productId) {
@@ -48,7 +48,7 @@ public class ProductImageServiceImpl implements ProductImageService{
                     position.set(productImage.getPosition() + 1);
                 }
         );
-
+        String imageBaseName = product.getSlug() + "-";
         List<ProductImage> productImages = new ArrayList<>();
         for (int i = 0; i < productImageInputList.size(); i++) {
             MultipartFile multipartFile = productImageInputList.get(i).getImageMultipartFile();
@@ -56,19 +56,31 @@ public class ProductImageServiceImpl implements ProductImageService{
             if (lastDotIndex == -1) {
                 throw new IllegalArgumentException("Invalid file name");
             }
-            String imageName = multipartFile.getOriginalFilename().substring(0, lastDotIndex)
-                    + "-"
+            String imageName = imageBaseName
                     + position.get()
                     + multipartFile.getOriginalFilename().substring(multipartFile.getOriginalFilename().lastIndexOf("."));
             ProductImage productImage = ProductImage.builder()
                     .product(product)
-                    .name(imageName)
                     .position(position.get())
                    // TODO: .imageUrl()
                     .build();
+            productImages.add(productImage);
             position.set(position.get() + 1);
+
         }
-        return productImageRepository.saveAll(productImages);
+
+        productImageRepository.saveAll(productImages);
+
+        // Fetch all images in order by position
+        List<ProductImage> productImageList = ensurePositionsFixed(productId);
+
+        // Handle thumbnail setting
+        if (product.getThumbnail() == null || !product.getThumbnail().equals(productImageList.get(0).getImageUrl())) {
+            // Set the first image as thumbnail
+            product.setThumbnail(productImageList.get(0).getImageUrl());
+        }
+
+        return productImageList;
 
     }
 
@@ -85,7 +97,8 @@ public class ProductImageServiceImpl implements ProductImageService{
         }
 
         List<ProductImage> productImageList = productImageRepository.findAllById(ids);
-        Integer productId = productImageList.get(0).getProduct().getProductId();
+        Product product = productImageList.get(0).getProduct();
+        Integer productId = product.getProductId();
         if (productId == null) {
             throw new IllegalArgumentException("The product with id " + productId + " does not exist in the database");
         }
@@ -110,7 +123,14 @@ public class ProductImageServiceImpl implements ProductImageService{
 
         productImageRepository.saveAll(productImageList);
 
-        return productImageRepository.findAllByProductId(productId);
+
+        List<ProductImage> imageList = ensurePositionsFixed(productId);
+        // Handle thumbnail setting
+        if (product.getThumbnail() == null || !product.getThumbnail().equals(imageList.get(0).getImageUrl())) {
+            // Set the first image as thumbnail
+            product.setThumbnail(imageList.get(0).getImageUrl());
+        }
+        return imageList;
     }
 
     @Override
@@ -122,15 +142,12 @@ public class ProductImageServiceImpl implements ProductImageService{
 
     @Override
     public List<ProductImage> getAllProductImagesByProductId(Integer productId) {
-        return productImageRepository.findAllByProductId(productId);
+        return productImageRepository.findAllByProductIdOrderByPosition(productId);
     }
 
     @Override
-    public Boolean deleteProductImageListByProductId(List<DeleteProductImageInput> deleteProductImageInputList) {
+    public List<ProductImage> deleteProductImageListByProductId(List<DeleteProductImageInput> deleteProductImageInputList) {
         Set<Integer> ids = deleteProductImageInputList.stream().map(DeleteProductImageInput::getImageId).collect(Collectors.toSet());
-        if (ids.size() != deleteProductImageInputList.size()) {
-            throw new IllegalArgumentException("Cannot use the same image ID twice within the deletion list");
-        }
 
         Integer productId = deleteProductImageInputList.get(0).getProductId();
         deleteProductImageInputList.forEach(deleteProductImageInput -> {
@@ -148,9 +165,35 @@ public class ProductImageServiceImpl implements ProductImageService{
 
         productImageRepository.deleteAll(productImageList);
 
+        // get them again to set the new positions
+        List<ProductImage> imageList = ensurePositionsFixed(productId);
+
+        if (product.getThumbnail() == null || !product.getThumbnail().equals(productImageList.get(0).getImageUrl())) {
+            productService.setThumbnailImage(product.getProductId(), imageList.get(0).getProductImageId());
+        }
+
+        return imageList;
+    }
 
 
-        return true;
+    private List<ProductImage> ensurePositionsFixed(Integer productId) {
+        // Fetch images ordered by current position
+        List<ProductImage> productImageList = productImageRepository.findAllByProductIdOrderByPosition(productId);
+
+        boolean positionsFixed = false;
+        for (int i = 0; i < productImageList.size(); i++) {
+            if (productImageList.get(i).getPosition() != i) {
+                productImageList.get(i).setPosition(i);
+                positionsFixed = true;
+            }
+        }
+
+        // Save only if positions were updated
+        if (positionsFixed) {
+            productImageRepository.saveAll(productImageList);
+        }
+
+        return productImageList;
     }
 
 
