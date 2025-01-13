@@ -22,9 +22,6 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer productImageId;
 
-    @NotBlank( message = "Invalid Name: Empty or Null value provided")
-    @Column(nullable = false, unique = true)
-    private String name;
 
     @Column(nullable = false, unique = true)
     private String imageUrl;

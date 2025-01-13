@@ -1,4 +1,4 @@
-package com.mas.e_commerce_back.inputs;
+package com.mas.e_commerce_back.inputs.product;
 
 import io.leangen.graphql.annotations.types.GraphQLType;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Data
@@ -14,15 +15,18 @@ import java.util.Date;
 @GraphQLType
 public class ProductDiscountInput {
 
+    @NotNull(message = "Invalid Product Id: Null value provided")
+    private Integer productId;
+
     @Positive
     @NotNull
     private BigDecimal discountPrice;
 
     @NotNull
-    private Date discountStartDate;
+    private ZonedDateTime discountStartDate;
 
     @NotNull
-    private Date discountEndDate;
+    private ZonedDateTime discountEndDate;
 
 
 }

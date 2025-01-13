@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
-@GraphQLType
 public class ProductImageInput {
 
         @NotNull(message = "Product Id cannot be null")

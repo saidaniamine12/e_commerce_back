@@ -15,7 +15,7 @@ import java.util.Set;
 public interface ProductImageRepository extends JpaRepository<ProductImage, Integer> {
 
     @Query(nativeQuery = true, value = "SELECT * FROM product_images WHERE product_id = :productId ORDER BY position ASC;")
-    List<ProductImage> findAllByProductId(@Param("productId") Integer productId);
+    List<ProductImage> findAllByProductIdOrderByPosition(@Param("productId") Integer productId);
 
     @Query(nativeQuery = true, value = "SELECT * FROM product_images WHERE position = (SELECT MAX(position) FROM product_images WHERE product_id = :productId) AND section_id = :productId")
     Optional<Category> findByLastPositionAndProductId(@Param("productId") Integer productId);

@@ -9,14 +9,14 @@ import java.util.List;
 
 public interface ProductImageService {
 
-    List<ProductImage> saveProductImageList(List<ProductImageInput> productImageInputList);
+    List<ProductImage> addProductImageList(List<ProductImageInput> productImageInputList);
 
     List<ProductImage> updateProductImageListPosition(List<ProductImagePositionInput> productImagePositionInput);
 
     ProductImage getProductImageById(Integer id);
 
     List<ProductImage> getAllProductImagesByProductId(Integer productId);
-    
-    Boolean deleteProductImageListByProductId(List<DeleteProductImageInput> deleteProductImageInputList);
+
+    List<ProductImage> deleteProductImageListByProductId(List<DeleteProductImageInput> deleteProductImageInputList);
 
 }
