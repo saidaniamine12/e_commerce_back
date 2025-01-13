@@ -17,7 +17,5 @@ public class ManufacturerInput {
     @NotBlank( message = "Invalid Name: Empty or Null value provided")
     private String name;
 
-
-    private MultipartFile logo;
-
+   // private MultipartFile logo;
 }

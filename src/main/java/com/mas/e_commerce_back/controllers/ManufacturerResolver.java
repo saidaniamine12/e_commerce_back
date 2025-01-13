@@ -1,22 +1,27 @@
 package com.mas.e_commerce_back.controllers;
 
+import com.mas.e_commerce_back.config.UploadScalar;
 import com.mas.e_commerce_back.dtos.ApiResponse;
 import com.mas.e_commerce_back.entities.Manufacturer;
 import com.mas.e_commerce_back.inputs.ManufacturerInput;
 import com.mas.e_commerce_back.services.ManufacturerService;
-import io.leangen.graphql.annotations.GraphQLArgument;
-import io.leangen.graphql.annotations.GraphQLMutation;
-import io.leangen.graphql.annotations.GraphQLNonNull;
-import io.leangen.graphql.annotations.GraphQLQuery;
+import graphql.schema.GraphQLScalarType;
+import io.leangen.graphql.annotations.*;
+import io.leangen.graphql.annotations.types.GraphQLType;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+import io.leangen.graphql.spqr.spring.autoconfigure.DefaultGlobalContext;
+import jakarta.servlet.http.Part;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Component
@@ -31,14 +36,20 @@ public class ManufacturerResolver {
         this.manufacturerService = manufacturerService;
     }
 
+    // use ArgumentInjector to get the request object
     @GraphQLMutation(description = "create a new manufacturer")
-    public ApiResponse<Manufacturer> createManufacturer(@Valid @RequestBody ManufacturerInput manufacturerInput) {
+    public ApiResponse<String> createManufacturer(String file) {
+        System.out.println("object" + file);
+        System.out.println("imageFile" );
+
+        System.out.println();
+        System.out.println("createManufacturerMutationn" );
         return new ApiResponse<>(
                 true,
                 "Manufacturer created successfully",
-                manufacturerService
-                        .createManufacturer(manufacturerInput)
+                "createManufacturerMutationn"
         );
+
     }
 
     // get all
@@ -72,15 +83,15 @@ public class ManufacturerResolver {
     }
 
 
-    // update manufacturer details
-    @GraphQLMutation(description = "update manufacturer details by id")
-    public ApiResponse<Manufacturer> updateManufacturerDetails(@Valid @GraphQLArgument ManufacturerInput manufacturerInput) {
-        return new ApiResponse<>(
-                true,
-                "manufacturer updated successfully",
-                manufacturerService.updateManufacturerDetails(manufacturerInput)
-        );
-    }
+//    // update manufacturer details
+//    @GraphQLMutation(description = "update manufacturer details by id")
+//    public ApiResponse<Manufacturer> updateManufacturerDetails(@Valid @GraphQLArgument ManufacturerInput manufacturerInput) {
+//        return new ApiResponse<>(
+//                true,
+//                "manufacturer updated successfully",
+//                manufacturerService.updateManufacturerDetails(manufacturerInput)
+//        );
+//    }
 
     // delete manufacturer by id
     @GraphQLMutation(description = "delete manufacturer by id")
